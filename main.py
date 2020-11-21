@@ -14,11 +14,12 @@ class Example(QMainWindow):
         self.flag = False
         self.first = True
         self.f_hi = True
+        self.ur = 0
         self.spisok = []
         self.x = 0
         self.y = 0
         self.o_rez = 0
-        self.k_res = 0
+        self.k_rez = 0
         self.tur = 0
         self.oldx = 0
         self.oldy = 0
@@ -215,7 +216,7 @@ class Example(QMainWindow):
             self.spisok = self.spisok_hk()
         if self.spisok:
             k_pole = self.pole.copy()
-            for ((self.poz1_x, self.poz1_y), (self.poz2_x, self.poz2_y)) in self.spisok:
+            for self.poz1_x, self.poz1_y in self.spisok:
                 t_spisok = self.hod()
                 if t_spisok:
                     self.proverka_hk()
@@ -254,12 +255,12 @@ class Example(QMainWindow):
             self.spisok_hi()
         if self.spisok:
             k_pole = copy.deepcopy(self.pole)
-            for ((self.poz1_x, self.poz1_y), (self.poz2_x, self.poz2_y)) in self.spisok:
+            for self.poz1_x, self.poz1_y in self.spisok:
                 t_spisok = self.hod()
                 if t_spisok:
                     self.proverka_hi()
                 else:
-                    if self.tur < ur:
+                    if self.tur < self.ur:
                         self.proverka_hk()
                     else:
                         s_k, s_i = self.skan()
@@ -288,14 +289,14 @@ class Example(QMainWindow):
         self.spisok_hi()
         if self.spisok:
             if (self.poz1_x, self.poz1_y) and (self.poz2_x, self.poz2_y) in self.spisok:
-                t_spisok = self.hod(1)
+                t_spisok = self.hod()
                 if t_spisok:
                     self.f_hi = True
             else:
                 self.f_hi = True
         self.update()
 
-    def hod(self, f):
+    def hod(self):
         if self.poz2_y == 0 and self.pole[self.poz1_y][self.poz1_x] == 1:
             self.pole[self.poz1_y][self.poz1_x] = 2
         if self.poz2_y == 7 and self.pole[self.poz1_y][self.poz1_x] == 3:
