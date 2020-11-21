@@ -17,6 +17,9 @@ class Example(QMainWindow):
         self.spisok = []
         self.x = 0
         self.y = 0
+        self.o_rez = 0
+        self.k_res = 0
+        self.tur = 0
         self.oldx = 0
         self.oldy = 0
         self.poz1_x = 0
@@ -153,7 +156,7 @@ class Example(QMainWindow):
             if str(type(k)) == "<class 'PyQt5.QtWidgets.QGraphicsPixmapItem'>":
                 self.oldFigures = k
                 serh = False
-        if serh and self.oldFigures != None:
+        if serh is not None and self.oldFigures is not None:
             self.oldFigures.setOffset(self.x, self.y)
             self.oldFigures = None
 
@@ -172,7 +175,6 @@ class Example(QMainWindow):
                 if self.f_hi:
                     self.hod_igroka()
                     if not self.f_hi:
-
                         self.hod_kompjutera()
                 self.poz1_x = -1
 
@@ -185,42 +187,42 @@ class Example(QMainWindow):
             for h in self.n2_spisok:
                 h = h
             for i in range(dh - 1):
-                self.spisok = self.hod(1, self.n2_spisok[th][i][0], self.n2_spisok[th][i][1], self.n2_spisok[th][1 + i][0],
-                             self.n2_spisok[th][1 + i][1])
+                self.hod()
             self.n2_spisok = []
             self.f_hi = True
         s_k, s_i = self.skan()
-        if not (s_i):
+        if not s_i:
             self.s = 2
             self.soobsenie()
-        elif not (s_k):
+        elif not s_k:
             self.s = 1
             self.soobsenie()
         elif self.f_hi and not (self.spisok_hi()):
             self.s = 3
             self.soobsenie()
-        elif not (f_hi) and not (spisok_hk()):
+        elif not self.f_hi and not self.spisok_hk():
             self.s = 3
             self.soobsenie()
 
     def spisok_hk(self):
         self.spisok = self.prosmotr_hodov_k1()
-        if not (self.spisok):
+        if not self.spisok:
             self.spisok = self.prosmotr_hodov_k2()
 
     def proverka_hk(self):
-        if not (self.spisok):
+        global l_rez
+        if not self.spisok:
             self.spisok = self.spisok_hk()
         if self.spisok:
             k_pole = self.pole.copy()
-            for (i, f) in self.spisok:
+            for ((self.poz1_x, self.poz1_y), (self.poz2_x, self.poz2_y)) in self.spisok:
                 t_spisok = self.hod()
                 if t_spisok:
                     self.proverka_hk()
                 else:
                     self.proverka_hi()
-                    if tur == 1:
-                        t_rez = o_rez / k_rez
+                    if self.tur == 1:
+                        t_rez = self.o_rez / self.k_rez
                         if not (self.n2_spisok):
                             self.n2_spisok = (
                                 self.n_spisok + ((self.poz1_x, self.poz1_y), (self.poz2_x, self.poz2_y)),)
@@ -234,19 +236,18 @@ class Example(QMainWindow):
                                 self.n2_spisok = (
                                     self.n_spisok + ((self.poz1_x, self.poz1_y), (self.poz2_x, self.poz2_y)),)
                                 l_rez = t_rez
-                        o_rez = 0
-                        k_rez = 0
+                        self.o_rez = 0
+                        self.k_rez = 0
                 self.pole = copy.deepcopy(k_pole)
         else:
             s_k, s_i = self.skan()
-            o_rez += (s_k - s_i)
-            k_rez += 1
+            self.o_rez += (s_k - s_i)
+            self.k_rez += 1
 
     def spisok_hi(self):
         self.prosmotr_hodov_i1()
         if not self.spisok:
             self.prosmotr_hodov_i2()
-
 
     def proverka_hi(self):
         if not self.spisok:
@@ -256,26 +257,26 @@ class Example(QMainWindow):
             for ((self.poz1_x, self.poz1_y), (self.poz2_x, self.poz2_y)) in self.spisok:
                 t_spisok = self.hod()
                 if t_spisok:
-                    self.proverka_hi(tur, t_spisok)
+                    self.proverka_hi()
                 else:
-                    if tur < ur:
-                        self.proverka_hk(tur + 1, (), [])
+                    if self.tur < ur:
+                        self.proverka_hk()
                     else:
-                        s_k, s_i = skan()
-                        o_rez += (s_k - s_i)
-                        k_rez += 1
+                        s_k, s_i = self.skan()
+                        self.o_rez += (s_k - s_i)
+                        self.k_rez += 1
 
-                pole = copy.deepcopy(k_pole)
+                self.pole = copy.deepcopy(k_pole)
         else:
-            s_k, s_i = skan()
-            o_rez += (s_k - s_i)
-            k_rez += 1
+            s_k, s_i = self.skan()
+            self.o_rez += (s_k - s_i)
+            self.k_rez += 1
 
     def skan(self):
         s_i = 0
         s_k = 0
         for i in range(8):
-            for ii in pole[i]:
+            for ii in self.pole[i]:
                 if ii == 1: s_i += 1
                 if ii == 2: s_i += 3
                 if ii == 3: s_k += 1
@@ -315,7 +316,6 @@ class Example(QMainWindow):
                 elif self.pole[self.poz2_y][self.poz2_x] == 1 or self.pole[self.poz2_y][self.poz2_x] == 2:
                     self.prosmotr_hodov_i1p()
 
-
     def prosmotr_hodov_i1p(self):
         if self.pole[self.y][self.x] == 1:
             for ix, iy in (-1, -1), (-1, 1), (1, -1), (1, 1):
@@ -335,7 +335,7 @@ class Example(QMainWindow):
                         if self.pole[self.y + iy * i][self.x + ix * i] == 3 or self.pole[self.y + iy * i][
                             self.x + ix * i] == 4:
                             osh += 1
-                        if self.pole[y + iy * i][x + ix * i] == 1 or self.pole[self.y + iy * i][
+                        if self.pole[self.y + iy * i][self.x + ix * i] == 1 or self.pole[self.y + iy * i][
                             self.x + ix * i] == 2 or osh == 2:
                             if osh > 0: self.spisok.pop()  # удаление хода из списка
                             break
@@ -348,12 +348,12 @@ class Example(QMainWindow):
                         if 0 <= self.y + iy <= 7 and 0 <= self.x + ix <= 7:
                             if self.pole[self.y + iy][self.x + ix] == 0:
                                 self.spisok.extend(((self.x, self.y),
-                                                   (self.x + ix, self.y + iy)))  # запись хода в конец списка
+                                                    (self.x + ix, self.y + iy)))  # запись хода в конец списка
                             if self.pole[self.y + iy][self.x + ix] == 3 or self.pole[self.y + iy][self.x + ix] == 4:
                                 if 0 <= self.y + iy * 2 <= 7 and 0 <= self.x + ix * 2 <= 7:
                                     if self.pole[self.y + iy * 2][self.x + ix * 2] == 0:
                                         self.extend.append(
-                                            ((x, y), (self.x + ix * 2, self.y + iy * 2)))  # запись хода в конец списка
+                                            ((self.x, self.y), (self.x + ix * 2, self.y + iy * 2)))  # запись хода в конец списка
                 if self.pole[self.y][self.x] == 2:  # пешка с короной
                     for ix, iy in (-1, -1), (-1, 1), (1, -1), (1, 1):
                         osh = 0  # определение правильности хода
@@ -361,11 +361,11 @@ class Example(QMainWindow):
                             if 0 <= self.y + iy * i <= 7 and 0 <= self.x + ix * i <= 7:
                                 if self.pole[self.y + iy * i][self.x + ix * i] == 0:
                                     self.spisok.extend(((self.x, self.y), (
-                                    self.x + ix * i, self.y + iy * i)))  # запись хода в конец списка
+                                        self.x + ix * i, self.y + iy * i)))  # запись хода в конец списка
                                 if self.pole[self.y + iy * i][self.x + ix * i] == 3 or self.pole[self.y + iy * i][
                                     self.x + ix * i] == 4:
                                     osh += 1
-                                if self.pole[self.y + iy * i][self.x + ix * i] == 1 or pole[self.y + iy * i][
+                                if self.pole[self.y + iy * i][self.x + ix * i] == 1 or self.pole[self.y + iy * i][
                                     self.x + ix * i] == 2 or osh == 2:
                                     break
 
@@ -377,12 +377,10 @@ class Example(QMainWindow):
 
     def soobsenie(self):
         if self.s == 1:
-           exit(0)
+            exit(0)
         if self.s == 2:
             exit(0)
         if self.s == 3:
-            exit(0)
-        if i:
             exit(0)
 
 
