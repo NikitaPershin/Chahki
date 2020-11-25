@@ -224,7 +224,7 @@ class Example(QMainWindow):
                     self.proverka_hi()
                     if self.tur == 1:
                         t_rez = self.o_rez / self.k_rez
-                        if not (self.n2_spisok):
+                        if not self.n2_spisok:
                             self.n2_spisok = (
                                 self.n_spisok + ((self.poz1_x, self.poz1_y), (self.poz2_x, self.poz2_y)),)
                             l_rez = t_rez
@@ -303,7 +303,7 @@ class Example(QMainWindow):
             self.pole[self.poz1_y][self.poz1_x] = 4
         self.pole[self.poz2_y][self.poz2_x] = self.pole[self.poz1_y][self.poz1_x]
         self.pole[self.poz1_y][self.poz1_x] = 0
-        kx = ky = 1
+        kx = ky = 1 # рубим пешку игрока
         if self.poz1_x < self.poz2_x: kx = -1
         if self.poz1_y < self.poz2_y: ky = -1
         x_poz, y_poz = self.poz2_x, self.poz2_y
@@ -311,11 +311,11 @@ class Example(QMainWindow):
             x_poz += kx
             y_poz += ky
             if self.pole[y_poz][x_poz] != 0:
-                self.pole[y_poz][x_poz] = 0
-                if self.pole[self.poz2_y][self.poz2_x] == 3 or self.pole[self.poz2_y][self.poz2_x] == 4:
-                    self.prosmotr_hodov_k1p()
-                elif self.pole[self.poz2_y][self.poz2_x] == 1 or self.pole[self.poz2_y][self.poz2_x] == 2:
-                    self.prosmotr_hodov_i1p()
+                self.pole[y_poz][x_poz] = 0 # проверяем ход той же пешкой...
+                if self.pole[self.poz2_y][self.poz2_x] == 3 or self.pole[self.poz2_y][self.poz2_x] == 4: # ...компьютера
+                    self.prosmotr_hodov_k1p() # возвращаем список доступных ходов
+                elif self.pole[self.poz2_y][self.poz2_x] == 1 or self.pole[self.poz2_y][self.poz2_x] == 2: # ...игрока
+                    self.prosmotr_hodov_i1p() # возвращаем список доступных ходов
 
     def prosmotr_hodov_i1p(self):
         if self.pole[self.y][self.x] == 1:
