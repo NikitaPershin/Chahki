@@ -167,31 +167,32 @@ class Example(QMainWindow):
         self.pozici_2()
 
     def pozici_2(self):
-        x, y = self.x // 100, self.y // 100
-        if self.pole[y][x] == 1 or self.pole[y][x] == 2:
+        x, y = self.x // 100, self.y // 100 # вычисляем координаты клетки
+        if self.pole[y][x] == 1 or self.pole[y][x] == 2:# проверяем пешку игрока в выбранной клетке
             self.poz1_x, self.poz1_y = x, y
         else:
-            if self.poz1_x != -1:
+            if self.poz1_x != -1:# клетка выбрана
                 self.poz2_x, self.poz2_y = x, y
                 if self.f_hi:
                     self.hod_igroka()
-                    if not self.f_hi:
-                        self.hod_kompjutera()
+                    if not self.f_hi:# ход игрока?
+                        self.hod_kompjutera()# передаём ход компьютеру
                 self.poz1_x = -1
 
     def hod_kompjutera(self):
         self.proverka_hk()
-        if self.n2_spisok:
-            kh = len(self.n2_spisok)
-            th = random.randint(0, kh - 1)
-            dh = len(self.n2_spisok[th])
-            for h in self.n2_spisok:
+        if self.n2_spisok:# проверяем наличие доступных ходов
+            kh = len(self.n2_spisok)# количество ходов
+            th = random.randint(0, kh - 1)# случайный ход
+            dh = len(self.n2_spisok[th])# длина хода
+            for h in self.n2_spisok:# !!!для отладки!!!
                 h = h
-            for i in range(dh - 1):
+            for i in range(dh - 1): # выполняем ход
                 self.hod()
-            self.n2_spisok = []
-            self.f_hi = True
+            self.n2_spisok = []# очищаем список ходов
+            self.f_hi = True# ход игрока доступен
         s_k, s_i = self.skan()
+        # определяем победителя
         if not s_i:
             self.s = 2
             self.soobsenie()
@@ -205,29 +206,29 @@ class Example(QMainWindow):
             self.s = 3
             self.soobsenie()
 
-    def spisok_hk(self):
-        self.spisok = self.prosmotr_hodov_k1()
+    def spisok_hk(self):# составляем список ходов компьютера
+        self.spisok = self.prosmotr_hodov_k1()# здесь проверяем обязательные ходы
         if not self.spisok:
-            self.spisok = self.prosmotr_hodov_k2()
+            self.spisok = self.prosmotr_hodov_k2()# здесь проверяем оставшиеся ходы
 
     def proverka_hk(self):
         global l_rez
-        if not self.spisok:
-            self.spisok = self.spisok_hk()
+        if not self.spisok:# если список ходов пустой...
+            self.spisok = self.spisok_hk()# заполняем
         if self.spisok:
-            k_pole = self.pole.copy()
-            for self.poz1_x, self.poz1_y in self.spisok:
+            k_pole = self.pole.copy()# копируем поле
+            for self.poz1_x, self.poz1_y in self.spisok:# проходим все ходы по списку
                 t_spisok = self.hod()
-                if t_spisok:
+                if t_spisok:# если существует ещё ход
                     self.proverka_hk()
                 else:
                     self.proverka_hi()
                     if self.tur == 1:
                         t_rez = self.o_rez / self.k_rez
-                        if not self.n2_spisok:
+                        if not self.n2_spisok:# записыаем если пустой
                             self.n2_spisok = (
                                 self.n_spisok + ((self.poz1_x, self.poz1_y), (self.poz2_x, self.poz2_y)),)
-                            l_rez = t_rez
+                            l_rez = t_rez# сохряняем наилучший результат
                         else:
                             if t_rez == l_rez:
                                 self.n2_spisok = self.n2_spisok + (
@@ -236,44 +237,44 @@ class Example(QMainWindow):
                                 self.n2_spisok = ()
                                 self.n2_spisok = (
                                     self.n_spisok + ((self.poz1_x, self.poz1_y), (self.poz2_x, self.poz2_y)),)
-                                l_rez = t_rez
+                                l_rez = t_rez# сохряняем наилучший результат
                         self.o_rez = 0
                         self.k_rez = 0
                 self.pole = copy.deepcopy(k_pole)
         else:
-            s_k, s_i = self.skan()
+            s_k, s_i = self.skan()# подсчёт результата хода
             self.o_rez += (s_k - s_i)
             self.k_rez += 1
 
-    def spisok_hi(self):
-        self.prosmotr_hodov_i1()
+    def spisok_hi(self):# составляем список ходов игрока
+        self.prosmotr_hodov_i1()# здесь проверяем обязательные ходы
         if not self.spisok:
-            self.prosmotr_hodov_i2()
+            self.prosmotr_hodov_i2()# здесь проверяем оставшиеся ходы
 
     def proverka_hi(self):
         if not self.spisok:
             self.spisok_hi()
-        if self.spisok:
+        if self.spisok:# проверяем наличие доступных ходов
             k_pole = copy.deepcopy(self.pole)
             for self.poz1_x, self.poz1_y in self.spisok:
                 t_spisok = self.hod()
-                if t_spisok:
+                if t_spisok:# если существует ещё ход
                     self.proverka_hi()
                 else:
                     if self.tur < self.ur:
                         self.proverka_hk()
                     else:
-                        s_k, s_i = self.skan()
+                        s_k, s_i = self.skan()# подсчёт результата хода
                         self.o_rez += (s_k - s_i)
                         self.k_rez += 1
 
                 self.pole = copy.deepcopy(k_pole)
-        else:
-            s_k, s_i = self.skan()
+        else: # доступных ходов нет
+            s_k, s_i = self.skan()# подсчёт результата хода
             self.o_rez += (s_k - s_i)
             self.k_rez += 1
 
-    def skan(self):
+    def skan(self):# подсчёт пешек на поле
         s_i = 0
         s_k = 0
         for i in range(8):
@@ -285,22 +286,22 @@ class Example(QMainWindow):
         return s_k, s_i
 
     def hod_igroka(self):
-        self.f_hi = False
+        self.f_hi = False# считаем ход игрока выполненным
         self.spisok_hi()
         if self.spisok:
-            if (self.poz1_x, self.poz1_y) and (self.poz2_x, self.poz2_y) in self.spisok:
-                t_spisok = self.hod()
-                if t_spisok:
-                    self.f_hi = True
+            if (self.poz1_x, self.poz1_y) and (self.poz2_x, self.poz2_y) in self.spisok:# проверяем ход на соответствие правилам игры
+                t_spisok = self.hod() # если всё хорошо, делаем ход
+                if t_spisok:# если есть ещё ход той же пешкой
+                    self.f_hi = True# считаем ход игрока невыполненным
             else:
-                self.f_hi = True
-        self.update()
+                self.f_hi = True# считаем ход игрока невыполненным
+        self.update()# !!!обновление
 
     def hod(self):
         if self.poz2_y == 0 and self.pole[self.poz1_y][self.poz1_x] == 1:
             self.pole[self.poz1_y][self.poz1_x] = 2
         if self.poz2_y == 7 and self.pole[self.poz1_y][self.poz1_x] == 3:
-            self.pole[self.poz1_y][self.poz1_x] = 4
+            self.pole[self.poz1_y][self.poz1_x] = 4 # делаем ход
         self.pole[self.poz2_y][self.poz2_x] = self.pole[self.poz1_y][self.poz1_x]
         self.pole[self.poz1_y][self.poz1_x] = 0
         kx = ky = 1 # рубим пешку игрока
